@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>BlockFree</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: Comic Sans MS;
+    }
+
+    body {
+      background: url("background.gif") no-repeat center center fixed;
+      background-size: cover;
+      color: white;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      backdrop-filter: brightness(0.9);
+    }
+
+    img {
+      width: 280px;
+      margin-bottom: 20px;
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      margin-bottom: 10px;
+    }
+
+    p {
+      opacity: 0.85;
+      margin-bottom: 30px;
+    }
+
+    .buttons {
+      display: flex;
+      gap: 15px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    a {
+      text-decoration: none;
+      color: white;
+      background: rgba(59, 130, 246, 0.85);
+      padding: 12px 22px;
+      border-radius: 10px;
+      font-weight: bold;
+      transition: 0.2s;
+      backdrop-filter: blur(4px);
+    }
+
+    a:hover {
+      background: rgba(37, 99, 235, 0.95);
+      transform: scale(1.05);
+    }
+
+    footer {
+      position: fixed;
+      bottom: 10px;
+      opacity: 0.6;
+      font-size: 0.85rem;
+    }
+  </style>
+</head>
+<body>
+
+  <img src="logo.png" alt="UBG Logo">
+
+  <h1>BlockFree</h1>
+  <p>obama is our savior</p>
+
+  <div class="buttons">
+    <a href="games.html">Games</a>
+    <a href="proxy.html">Proxy</a>
+    <a href="apps.html">Apps</a>
+    <a href="about.html">About</a>
+  </div>
+</body>
+</html>
