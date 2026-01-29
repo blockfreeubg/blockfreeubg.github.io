@@ -1,0 +1,1921 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coreus</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%23000'/><circle cx='30' cy='30' r='15' fill='%23fff'/><circle cx='70' cy='70' r='15' fill='%23fff'/><path d='M35 35 L65 65' stroke='%23fff' stroke-width='5'/></svg>" type="image/svg+xml">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://js.puter.com/v2/"></script>
+    <style>
+        :root {
+            --primary-bg: #000000;
+            --secondary-bg: #0d0d0d;
+            --tertiary-bg: #1a1a1a;
+            --primary-text: #ffffff;
+            --secondary-text: #aaaaaa;
+            --border-color: #262626;
+            --accent-color: #4CAF50;
+            --accent-light: #22c55e;
+            --navbar-bg: rgba(0, 0, 0, 0.95);
+            --card-bg: #0d0d0d;
+        }
+
+        body.theme-blue {
+            --primary-bg: #000d1a;
+            --secondary-bg: #00152d;
+            --tertiary-bg: #001d40;
+            --primary-text: #e0f0ff;
+            --secondary-text: #a0c0e0;
+            --border-color: #003366;
+            --accent-color: #4da6ff;
+            --accent-light: #80c7ff;
+            --navbar-bg: rgba(0, 5, 15, 0.80);
+            --card-bg: #00152d;
+        }
+
+        body.theme-purple {
+            --primary-bg: #150029;
+            --secondary-bg: #220040;
+            --tertiary-bg: #2d0052;
+            --primary-text: #f0e0ff;
+            --secondary-text: #d4a0ff;
+            --border-color: #4a0080;
+            --accent-color: #b366ff;
+            --accent-light: #cc99ff;
+            --navbar-bg: rgba(15, 0, 25, 0.80);
+            --card-bg: #220040;
+        }
+
+        body.theme-green {
+            --primary-bg: #000d06;
+            --secondary-bg: #001a0d;
+            --tertiary-bg: #002614;
+            --primary-text: #e0ffe0;
+            --secondary-text: #a0ffa0;
+            --border-color: #006600;
+            --accent-color: #4dff4d;
+            --accent-light: #99ff99;
+            --navbar-bg: rgba(0, 10, 5, 0.80);
+            --card-bg: #001a0d;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--primary-bg);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            color: var(--primary-text);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding-bottom: 80px; /* Space for the floating navbar */
+        }
+
+        .container {
+            text-align: center;
+            width: 90%;
+            max-width: 600px;
+        }
+
+        .title {
+            font-size: 4rem;
+            font-weight: 300;
+            letter-spacing: 0.1em;
+            margin-bottom: 3rem;
+            color: var(--primary-text);
+            text-transform: lowercase;
+            margin-right: 0px; /* Make room for the smaller settings button */
+        }
+
+        .search-container {
+            position: relative;
+            margin-bottom: 2rem;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 1rem 1.5rem;
+            font-size: 1.1rem;
+            background-color: var(--tertiary-bg);
+            border: 2px solid var(--border-color);
+            border-radius: 50px;
+            color: var(--primary-text);
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .search-input:focus {
+            border-color: var(--accent-color);
+            background-color: var(--secondary-bg);
+        }
+
+        .search-input::placeholder {
+            color: var(--secondary-text);
+        }
+
+        /* Search bar styles for games and tools views */
+        #gamesSearchInput, #toolsSearchInput {
+            transition: all 0.3s ease !important;
+        }
+
+        #gamesSearchInput:focus, #toolsSearchInput:focus {
+            border-color: var(--accent-color) !important;
+            background-color: var(--secondary-bg) !important;
+            box-shadow: 0 0 15px rgba(76, 175, 80, 0.2) !important;
+        }
+
+        .proxy-btn {
+            padding: 0.8rem 2rem;
+            font-size: 1rem;
+            background: linear-gradient(45deg, var(--tertiary-bg), var(--secondary-bg));
+            border: none;
+            border-radius: 25px;
+            color: var(--primary-text);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 1rem;
+        }
+
+        .proxy-btn:hover {
+            background: linear-gradient(45deg, var(--secondary-bg), var(--card-bg));
+            transform: translateY(-1px);
+        }
+
+        .proxy-btn:disabled {
+            background: var(--secondary-bg);
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .status {
+            margin-top: 1.5rem;
+            padding: 1rem;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            display: none;
+        }
+
+        .status.success {
+            background-color: rgba(34, 197, 94, 0.1);
+            border: 1px solid rgba(34, 197, 94, 0.3);
+            color: #22c55e;
+        }
+
+        .status.error {
+            background-color: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: #ef4444;
+        }
+
+        .status.loading {
+            background-color: rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            color: #3b82f6;
+        }
+
+        .status.warning {
+        	background-color: rgba(251, 191, 36, 0.1);
+        	border: 1px solid rgba(251, 191, 36, 0.3);
+        	color: #fbbf24;
+        }
+
+        .proxy-frame {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1000;
+            background: var(--primary-bg);
+        }
+
+        /* Loading overlay for embeddr */
+        .loading-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--primary-bg);
+            z-index: 2000;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 0.5s ease-in-out;
+        }
+
+        .loading-spinner {
+            width: 60px;
+            height: 60px;
+            border: 4px solid rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            border-top: 4px solid var(--accent-color);
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            color: var(--primary-text);
+            font-size: 1.2rem;
+            text-align: center;
+            padding: 0 20px;
+        }
+
+        .loading-overlay.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .frame-header {
+            background: var(--secondary-bg);
+            padding: 0.5rem 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .frame-url {
+            color: var(--secondary-text);
+            font-size: 0.9rem;
+            font-family: monospace;
+        }
+
+        .close-btn {
+            background: #ff4444;
+            border: none;
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 15px;
+            cursor: pointer;
+            font-size: 0.8rem;
+        }
+
+        .close-btn:hover {
+            background: #ff6666;
+        }
+
+        .proxy-iframe {
+            width: 100%;
+            height: calc(100% - 50px);
+            border: none;
+            background: var(--primary-text);
+        }
+
+        /* Attempt to style iframe content where possible */
+        .proxy-iframe::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: transparent;
+            pointer-events: none;
+        }
+
+        .extra-style {
+            margin: 10px;
+            padding: 5px;
+        }
+
+        @media (max-width: 768px) {
+            .title {
+                font-size: 2.5rem;
+                margin-bottom: 2rem;
+            }
+
+            .search-input {
+                font-size: 1rem;
+                padding: 0.8rem 1.2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div style="position: relative; width: 100%;">
+            <h1 class="title">coreus</h1>
+        </div>
+
+        <div class="search-container">
+            <input
+                type="text"
+                class="search-input"
+                placeholder="Search with DuckDuckGo or enter and address ..."
+                id="urlInput"
+            />
+        </div>
+
+        <button class="proxy-btn" id="proxyBtn" onclick="startProxy()">
+            Launch
+        </button>
+
+        <div class="status" id="statusDiv"></div>
+        
+        <div id="extra-div" style="display:none;">
+            <p>This is extra content</p>
+        </div>
+    </div>
+
+    <!-- Settings Modal -->
+    <div class="modal" id="settingsModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 2000; justify-content: center; align-items: center;">
+        <div class="modal-content" style="background: var(--card-bg); padding: 2rem; border-radius: 10px; width: 90%; max-width: 500px; position: relative;">
+            <h2 style="color: var(--primary-text); margin-bottom: 1.5rem;">Proxy Settings</h2>
+
+            <div style="margin-bottom: 1.5rem;">
+                <label style="display: block; color: var(--primary-text); margin-bottom: 0.5rem;">Proxy Mode:</label>
+                <div style="display: flex; gap: 1.5rem; margin-bottom: 1rem;">
+                    <label style="color: var(--primary-text); display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                        <input type="radio" name="proxyMode" value="fallback" checked onchange="setProxyMode('fallback')" style="width: 16px; height: 16px; accent-color: var(--accent-color);"> Auto Fallback
+                    </label>
+                    <label style="color: var(--primary-text); display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                        <input type="radio" name="proxyMode" value="single" onchange="setProxyMode('single')" style="width: 16px; height: 16px; accent-color: var(--accent-color);"> Single Proxy
+                    </label>
+                </div>
+            </div>
+
+            <div id="singleProxySelection" style="margin-bottom: 1.5rem;">
+                <label style="display: block; color: var(--primary-text); margin-bottom: 0.5rem;">Select Proxy:</label>
+                <select id="proxySelect" style="width: 100%; padding: 0.8rem; background: var(--secondary-bg); color: var(--primary-text); border: 2px solid var(--border-color); border-radius: 8px; font-size: 1rem; outline: none; transition: border-color 0.3s;">
+                    <option value="https://embeddr.rhw.one/embed#">embeddr.rhw.one</option>
+                    <option value="https://embeddr.pages.dev/embed#">embeddr.pages.dev</option>
+                    <option value="https://ev2.rhw.one/active/embed#">ev2.rhw.one</option>
+                    <option value="https://api.allorigins.win/raw?url=">api.allorigins.win</option>
+                    <option value="https://api.cors.lol/?url=">api.cors.lol</option>
+                    <option value="https://yacdn.org/proxy/">yacdn.org</option>
+                </select>
+            </div>
+
+            <div style="display: flex; justify-content: flex-end; gap: 1rem; margin-top: 1rem;">
+                <button class="proxy-btn" onclick="toggleSettingsModal()" style="background: var(--secondary-bg);">Cancel</button>
+                <button class="proxy-btn" onclick="saveSettings()" style="background: var(--accent-color);">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Puter Login Modal -->
+    <div id="puterLoginModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 3000; justify-content: center; align-items: center;">
+        <div style="background: var(--card-bg); padding: 2.5rem; border-radius: 15px; width: 90%; max-width: 400px; text-align: center; border: 1px solid var(--border-color); position: relative;">
+            <button style="position: absolute; top: 15px; right: 15px; background: none; border: none; color: var(--secondary-text); font-size: 1.5rem; cursor: pointer; transition: color 0.3s;" onclick="closePuterLoginModal()" title="Close">
+                ✕
+            </button>
+            <i class="fas fa-robot" style="font-size: 3rem; color: white; margin-bottom: 1rem; display: block;"></i>
+            <h2 style="color: var(--primary-text); margin-bottom: 1rem; font-size: 1.5rem;">Sign in to Puter AI</h2>
+            <p style="color: var(--secondary-text); margin-bottom: 2rem; line-height: 1.6;">You will need to login with Puter to use AI chat features.</p>
+            <button id="puterSignInBtn" style="width: 100%; padding: 1rem; background: white; border: none; color: #000; border-radius: 10px; font-size: 1.1rem; font-weight: 600; cursor: pointer; transition: all 0.3s; box-shadow: 0 4px 15px rgba(255, 255, 255, 0.2);" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 20px rgba(255, 255, 255, 0.3)';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 15px rgba(255, 255, 255, 0.2)';">
+                <i class="fas fa-sign-in-alt" style="margin-right: 0.5rem;"></i> Login with Puter
+            </button>
+        </div>
+    </div>
+
+    <div class="proxy-frame" id="proxyFrame">
+        <div class="frame-header">
+            <span class="frame-url" id="frameUrl"></span>
+            <button class="close-btn" onclick="closeProxy()">✕ Close</button>
+        </div>
+        <iframe class="proxy-iframe" id="proxyIframe" sandbox="allow-same-origin allow-scripts allow-forms allow-popups allow-popups-to-escape-sandbox"></iframe>
+        <div class="loading-overlay" id="proxyLoadingOverlay">
+            <div class="loading-spinner"></div>
+            <div class="loading-text">Loading content...</div>
+        </div>
+    </div>
+
+    <!-- Game Popup View -->
+    <div id="gamePopup" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--primary-bg); z-index: 3000;">
+        <div class="frame-header">
+            <span class="frame-url" id="gameUrlDisplay"></span>
+            <button class="close-btn" onclick="closeGamePopup()">✕ Close</button>
+        </div>
+        <iframe class="proxy-iframe" id="gameIframe" sandbox="allow-same-origin allow-scripts allow-forms allow-popups allow-popups-to-escape-sandbox"></iframe>
+        <div class="loading-overlay" id="gameLoadingOverlay">
+            <div class="loading-spinner"></div>
+            <div class="loading-text">Loading content...</div>
+        </div>
+    </div>
+
+    <!-- Chat View Container -->
+    <div id="chatView" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--primary-bg); z-index: 2000; overflow: hidden; padding: 0;">
+        <div style="display: flex; justify-content: center; align-items: center; height: 100%; width: 100%; padding-bottom: 100px;">
+            <div style="width: 90%; max-width: 1000px; height: 70vh; background: var(--card-bg); border-radius: 20px; overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 8px 32px rgba(0,0,0,0.5);">
+                <div style="flex: 1; overflow-y: auto; display: flex; align-items: center; justify-content: center;">
+                    <div id="chatContainer" style="width: 100%; height: 100%;">
+                        <script src="https://minnit.chat/js/embed.js?c=1758971289" defer></script>
+                        <span style="display: none;" class="minnit-chat-sembed" data-chatname="https://organizations.minnit.chat/495986791376958/c/Website?embed" data-style="width:100%; height:100%; max-height:100%; border-radius: 20px;" data-version="1.55">Chat</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Floating Bottom Navbar for Chat View -->
+        <div class="bottom-navbar" style="position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); display: flex; align-items: center; background: rgba(0,0,0,0.8); backdrop-filter: blur(10px); border-radius: 50px; padding: 10px 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.3); z-index: 2001; border: 1px solid rgba(255,255,255,0.1);">
+            <button class="nav-icon-btn" style="background: none; border: none; cursor: pointer; padding: 8px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: background 0.3s;" onclick="location.reload()">
+                <img src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='30' cy='30' r='15' fill='%23fff'/><circle cx='70' cy='70' r='15' fill='%23fff'/><path d='M35 35 L65 65' stroke='%23fff' stroke-width='5'/></svg>" alt="Home" style="width: 24px; height: 24px;">
+            </button>
+            <div style="width: 1px; height: 24px; background: rgba(255,255,255,0.2); margin: 0 10px;"></div>
+            <button class="nav-icon-btn" style="background: none; border: none; cursor: pointer; padding: 8px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: background 0.3s;" onclick="hideChatView()">
+                <i class="fas fa-network-wired" style="color: white; font-size: 20px;"></i>
+            </button>
+            <div style="width: 1px; height: 24px; margin: 0 10px;"></div>
+            <button class="nav-icon-btn" style="background: none; border: none; cursor: pointer; padding: 8px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: background 0.3s;" onclick="showGamesView()">
+                <i class="fas fa-gamepad" style="color: white; font-size: 20px;"></i>
+            </button>
+            <div style="width: 1px; height: 24px; margin: 0 10px;"></div>
+            <button class="nav-icon-btn" style="background: none; border: none; cursor: pointer; padding: 8px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: background 0.3s;" onclick="showToolsView()">
+                <i class="fas fa-tools" style="color: white; font-size: 20px;"></i>
+            </button>
+            <div style="width: 1px; height: 24px; margin: 0 10px;"></div>
+            <button class="nav-icon-btn" style="background: none; border: none; cursor: pointer; padding: 8px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: background 0.3s;" onclick="showAiView()">
+                <i class="fas fa-robot" style="color: white; font-size: 20px;"></i>
+            </button>
+            <div style="width: 1px; height: 24px; margin: 0 10px;"></div>
+            <button class="nav-icon-btn" style="background: none; border: none; cursor: pointer; padding: 8px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: background 0.3s;" onclick="showChatView()">
+                <i class="fas fa-comment-alt" style="color: white; font-size: 20px;"></i>
+            </button>
+            <div style="width: 1px; height: 24px; margin: 0 10px;"></div>
+            <button class="nav-icon-btn" style="background: none; border: none; cursor: pointer; padding: 8px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: background 0.3s;" onclick="showAboutView()">
+                <i class="fas fa-info-circle" style="color: white; font-size: 20px;"></i>
+            </button>
+            <div style="width: 1px; height: 24px; margin: 0 10px;"></div>
+            <button class="nav-icon-btn" style="background: none; border: none; cursor: pointer; padding: 8px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: background 0.3s;" onclick="showSettingsView()">
+                <i class="fas fa-cog" style="color: white; font-size: 20px;"></i>
+            </button>
+            <div style="width: 1px; height: 24px; background: rgba(255,255,255,0.2); margin: 0 10px;"></div>
+            <span class="navbar-time" style="color: #fff; font-size: 0.85rem; font-family: monospace; min-width: 50px; text-align: right; margin-right: 10px;">00:00:00</span>
+        </div>
+    </div>
+
+    <!-- Settings View Container -->
+    <div id="settingsView" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--primary-bg); z-index: 2000; overflow-y: auto; padding: 20px 20px 100px 20px;">
+        <div style="display: flex; justify-content: center; align-items: center; margin-bottom: 40px;">
+            <h2 class="title" style="font-size: 4rem; margin-bottom: 0; flex-grow: 1; text-align: center;">Settings</h2>
+        </div>
+        <div style="max-width: 800px; margin: 0 auto; background: var(--card-bg); padding: 2rem; border-radius: 10px;">
+            <div style="margin-bottom: 1.5rem;">
+                <h3 style="color: var(--primary-text); margin-bottom: 1rem;">Theme</h3>
+                <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                    <button onclick="changeTheme('default')" style="padding: 0.5rem 1rem; background: var(--tertiary-bg); color: var(--primary-text); border: 1px solid var(--border-color); border-radius: 5px; cursor: pointer;">Default</button>
+                    <button onclick="changeTheme('blue')" style="padding: 0.5rem 1rem; background: var(--tertiary-bg); color: var(--primary-text); border: 1px solid var(--border-color); border-radius: 5px; cursor: pointer;">Blue</button>
+                    <button onclick="changeTheme('purple')" style="padding: 0.5rem 1rem; background: var(--tertiary-bg); color: var(--primary-text); border: 1px solid var(--border-color); border-radius: 5px; cursor: pointer;">Purple</button>
+                    <button onclick="changeTheme('green')" style="padding: 0.5rem 1rem; background: var(--tertiary-bg); color: var(--primary-text); border: 1px solid var(--border-color); border-radius: 5px; cursor: pointer;">Green</button>
+                </div>
+            </div>
+            
+            <div style="margin-bottom: 1.5rem;">
+                <h3 style="color: var(--primary-text); margin-bottom: 1rem;">Proxy Settings</h3>
+                <div style="margin-bottom: 1rem;">
+                    <label style="display: block; color: var(--primary-text); margin-bottom: 0.5rem;">Proxy Mode:</label>
+                    <div style="display: flex; gap: 1.5rem; margin-bottom: 1rem;">
+                        <label style="color: var(--primary-text); display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                            <input type="radio" name="proxyModeSettings" value="fallback" checked onchange="setProxyMode('fallback')" style="width: 16px; height: 16px; accent-color: var(--accent-color);"> Auto Fallback
+                        </label>
+                        <label style="color: var(--primary-text); display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                            <input type="radio" name="proxyModeSettings" value="single" onchange="setProxyMode('single')" style="width: 16px; height: 16px; accent-color: var(--accent-color);"> Single Proxy
+                        </label>
+                    </div>
+                </div>
+
+                <div id="singleProxySelectionSettings" style="margin-bottom: 1rem;">
+                    <label style="display: block; color: var(--primary-text); margin-bottom: 0.5rem;">Select Proxy:</label>
+                    <select id="proxySelectSettings" style="width: 100%; padding: 0.8rem; background: var(--secondary-bg); color: var(--primary-text); border: 2px solid var(--border-color); border-radius: 8px; font-size: 1rem; outline: none; transition: border-color 0.3s;">
+                        <option value="https://embeddr.rhw.one/embed#">embeddr.rhw.one</option>
+                        <option value="https://embeddr.pages.dev/embed#">embeddr.pages.dev</option>
+                        <option value="https://ev2.rhw.one/active/embed#">ev2.rhw.one</option>
+                        <option value="https://api.allorigins.win/raw?url=">api.allorigins.win</option>
+                        <option value="https://api.cors.lol/?url=">api.cors.lol</option>
+                        <option value="https://yacdn.org/proxy/">yacdn.org</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div style="display: flex; justify-content: flex-end; margin-top: 2rem;">
+                <button class="proxy-btn" onclick="hideSettingsView()" style="background: var(--accent-color);">Done</button>
+            </div>
+        </div>
+
+        <!-- Floating Bottom Navbar for Settings View -->
+        <div class="bottom-navbar" style="position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); display: flex; align-items: center; background: rgba(0,0,0,0.8); backdrop-filter: blur(10px); border-radius: 50px; padding: 10px 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.3); z-index: 2001; border: 1px solid rgba(255,255,255,0.1);">
+            <button class="nav-icon-btn" style="background: none; border: none; cursor: pointer; padding: 8px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: background 0.3s;" onclick="location.reload()">
+                <img src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='30' cy='30' r='15' fill='%23fff'/><circle cx='70' cy='70' r='15' fill='%23fff'/><path d='M35 35 L65 65' stroke='%23fff' stroke-width='5'/></svg>" alt="Home" style="width: 24px; height: 24px;">
+            </button>
+            <div style="width: 1px; height: 24px; background: rgba(255,255,255,0.2); margin: 0 10px;"></div>
+            <button class="nav-icon-btn" style="background: none; border: none; cursor: pointer; padding: 8px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: background 0.3s;" onclick="hideSettingsView()">
+                <i class="fas fa-network-wired" style="color: white; font-size: 20px;"></i>
+            </button>
+            <div style="width: 1px; height: 24px; margin: 0 10px;"></div>
+            <button class="nav-icon-btn" style="background: none; border: none; cursor: pointer; padding: 8px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: background 0.3s;" onclick="showGamesView()">
+                <i class="fas fa-gamepad" style="color: white; font-size: 20px;"></i>
+            </button>
+            <div style="width: 1px; height: 24px; margin: 0 10px;"></div>
+            <button class="nav-icon-btn" style="background: none; border: none; cursor: pointer; padding: 8px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: background 0.3s;" onclick="showToolsView()">
+                <i class="fas fa-tools" style="color: white; font-size: 20px;"></i>
+            </button>
+            <div style="width: 1px; height: 24px; margin: 0 10px;"></div>
+            <button class="nav-icon-btn" style="background: none; border: none; cursor: pointer; padding: 8px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: background 0.3s;" onclick="showAiView()">
+                <i class="fas fa-robot" style="color: white; font-size: 20px;"></i>
+            </button>
+            <div style="width: 1px; height: 24px; margin: 0 10px;"></div>
+            <button class="nav-icon-btn" style="background: none; border: none; cursor: pointer; padding: 8px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: background 0.3s;" onclick="showChatView()">
+                <i class="fas fa-comment-alt" style="color: white; font-size: 20px;"></i>
+            </button>
+            <div style="width: 1px; height: 24px; margin: 0 10px;"></div>
+            <button class="nav-icon-btn" style="background: none; border: none; cursor: pointer; padding: 8px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: background 0.3s;" onclick="showAboutView()">
+                <i class="fas fa-info-circle" style="color: white; font-size: 20px;"></i>
+            </button>
+            <div style="width: 1px; height: 24px; margin: 0 10px;"></div>
+            <button class="nav-icon-btn" style="background: none; border: none; cursor: pointer; padding: 8px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: background 0.3s;" onclick="showSettingsView()">
+                <i class="fas fa-cog" style="color: white; font-size: 20px;"></i>
+            </button>
+            <div style="width: 1px; height: 24px; background: rgba(255,255,255,0.2); margin: 0 10px;"></div>
+            <span class="navbar-time" style="color: #fff; font-size: 0.85rem; font-family: monospace; min-width: 50px; text-align: right; margin-right: 10px;">00:00:00</span>
+        </div>
+    </div>
+
+    <!-- Floating Bottom Navbar -->
+    <div class="bottom-navbar" style="position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); display: flex; align-items: center; background: rgba(0,0,0,0.8); backdrop-filter: blur(10px); border-radius: 50px; padding: 10px 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.3); z-index: 1000; border: 1px solid rgba(255,255,255,0.1);">
+        <button class="nav-icon-btn" style="background: none; border: none; cursor: pointer; padding: 8px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: background 0.3s;" onclick="location.reload()">
+            <img src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='30' cy='30' r='15' fill='%23fff'/><circle cx='70' cy='70' r='15' fill='%23fff'/><path d='M35 35 L65 65' stroke='%23fff' stroke-width='5'/></svg>" alt="Home" style="width: 24px; height: 24px;">
+        </button>
+        <div style="width: 1px; height: 24px; background: rgba(255,255,255,0.2); margin: 0 10px;"></div>
+        <button class="nav-icon-btn" style="background: none; border: none; cursor: pointer; padding: 8px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: background 0.3s;" onclick="startProxy()">
+            <i class="fas fa-network-wired" style="color: white; font-size: 20px;"></i>
+        </button>
+        <div style="width: 1px; height: 24px; margin: 0 10px;"></div>
+        <button class="nav-icon-btn" style="background: none; border: none; cursor: pointer; padding: 8px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: background 0.3s;" onclick="showGamesView()">
+            <i class="fas fa-gamepad" style="color: white; font-size: 20px;"></i>
+        </button>
+        <div style="width: 1px; height: 24px; margin: 0 10px;"></div>
+        <button class="nav-icon-btn" style="background: none; border: none; cursor: pointer; padding: 8px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: background 0.3s;" onclick="showToolsView()">
+            <i class="fas fa-tools" style="color: white; font-size: 20px;"></i>
+        </button>
+        <div style="width: 1px; height: 24px; margin: 0 10px;"></div>
+        <button class="nav-icon-btn" style="background: none; border: none; cursor: pointer; padding: 8px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: background 0.3s;" onclick="showAiView()">
+            <i class="fas fa-robot" style="color: white; font-size: 20px;"></i>
+        </button>
+        <div style="width: 1px; height: 24px; margin: 0 10px;"></div>
+        <button class="nav-icon-btn" style="background: none; border: none; cursor: pointer; padding: 8px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: background 0.3s;" onclick="showChatView()">
+            <i class="fas fa-comment-alt" style="color: white; font-size: 20px;"></i>
+        </button>
+        <div style="width: 1px; height: 24px; margin: 0 10px;"></div>
+        <button class="nav-icon-btn" style="background: none; border: none; cursor: pointer; padding: 8px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: background 0.3s;" onclick="showAboutView()">
+            <i class="fas fa-info-circle" style="color: white; font-size: 20px;"></i>
+        </button>
+        <div style="width: 1px; height: 24px; margin: 0 10px;"></div>
+        <button class="nav-icon-btn" style="background: none; border: none; cursor: pointer; padding: 8px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: background 0.3s;" onclick="showSettingsView()">
+            <i class="fas fa-cog" style="color: white; font-size: 20px;"></i>
+        </button>
+        <div style="width: 1px; height: 24px; background: rgba(255,255,255,0.2); margin: 0 10px;"></div>
+        <span class="navbar-time" style="color: #fff; font-size: 0.85rem; font-family: monospace; min-width: 50px; text-align: right; margin-right: 10px;">00:00:00</span>
+    </div>
+
+    <!-- Games View Container -->
+    <div id="gamesView" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--primary-bg); z-index: 2000; overflow-y: auto; padding: 20px 20px 100px 20px;">
+        <div style="display: flex; justify-content: center; align-items: center; margin-bottom: 40px;">
+            <h2 class="title" style="font-size: 4rem; margin-bottom: 0; flex-grow: 1; text-align: center;">Coreus games</h2>
+        </div>
+        <div style="display: flex; justify-content: center; margin-bottom: 30px;">
+            <input type="text" id="gamesSearchInput" placeholder="Search games..." style="width: 100%; max-width: 500px; padding: 12px 20px; font-size: 1rem; background-color: var(--secondary-bg); border: 2px solid var(--border-color); border-radius: 25px; color: var(--primary-text); outline: none; transition: all 0.3s ease;" />
+        </div>
+        <div id="gamesGrid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 30px; padding: 10px;"></div>
+
+        <!-- Floating Bottom Navbar for Games View -->
+        <div class="bottom-navbar" style="position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); display: flex; align-items: center; background: rgba(0,0,0,0.8); backdrop-filter: blur(10px); border-radius: 50px; padding: 10px 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.3); z-index: 2001; border: 1px solid rgba(255,255,255,0.1);">
+            <button class="nav-icon-btn" style="background: none; border: none; cursor: pointer; padding: 8px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: background 0.3s;" onclick="location.reload()">
+                <img src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='30' cy='30' r='15' fill='%23fff'/><circle cx='70' cy='70' r='15' fill='%23fff'/><path d='M35 35 L65 65' stroke='%23fff' stroke-width='5'/></svg>" alt="Home" style="width: 24px; height: 24px;">
+            </button>
+            <div style="width: 1px; height: 24px; background: rgba(255,255,255,0.2); margin: 0 10px;"></div>
+            <button class="nav-icon-btn" style="background: none; border: none; cursor: pointer; padding: 8px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: background 0.3s;" onclick="hideGamesView()">
+                <i class="fas fa-network-wired" style="color: white; font-size: 20px;"></i>
+            </button>
+            <div style="width: 1px; height: 24px; margin: 0 10px;"></div>
+            <button class="nav-icon-btn" style="background: none; border: none; cursor: pointer; padding: 8px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: background 0.3s;" onclick="showGamesView()">
+                <i class="fas fa-gamepad" style="color: white; font-size: 20px;"></i>
+            </button>
+            <div style="width: 1px; height: 24px; margin: 0 10px;"></div>
+            <button class="nav-icon-btn" style="background: none; border: none; cursor: pointer; padding: 8px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: background 0.3s;" onclick="showToolsView()">
+                <i class="fas fa-tools" style="color: white; font-size: 20px;"></i>
+            </button>
+            <div style="width: 1px; height: 24px; margin: 0 10px;"></div>
+            <button class="nav-icon-btn" style="background: none; border: none; cursor: pointer; padding: 8px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: background 0.3s;" onclick="showAiView()">
+                <i class="fas fa-robot" style="color: white; font-size: 20px;"></i>
+            </button>
+            <div style="width: 1px; height: 24px; margin: 0 10px;"></div>
+            <button class="nav-icon-btn" style="background: none; border: none; cursor: pointer; padding: 8px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: background 0.3s;" onclick="showChatView()">
+                <i class="fas fa-comment-alt" style="color: white; font-size: 20px;"></i>
+            </button>
+            <div style="width: 1px; height: 24px; margin: 0 10px;"></div>
+            <button class="nav-icon-btn" style="background: none; border: none; cursor: pointer; padding: 8px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: background 0.3s;" onclick="showAboutView()">
+                <i class="fas fa-info-circle" style="color: white; font-size: 20px;"></i>
+            </button>
+            <div style="width: 1px; height: 24px; margin: 0 10px;"></div>
+            <button class="nav-icon-btn" style="background: none; border: none; cursor: pointer; padding: 8px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: background 0.3s;" onclick="showSettingsView()">
+                <i class="fas fa-cog" style="color: white; font-size: 20px;"></i>
+            </button>
+            <div style="width: 1px; height: 24px; background: rgba(255,255,255,0.2); margin: 0 10px;"></div>
+            <span class="navbar-time" style="color: #fff; font-size: 0.85rem; font-family: monospace; min-width: 50px; text-align: right; margin-right: 10px;">00:00:00</span>
+        </div>
+    </div>
+
+    <!-- Tools View Container -->
+    <div id="toolsView" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--primary-bg); z-index: 2000; overflow-y: auto; padding: 20px 20px 100px 20px;">
+        <div style="display: flex; justify-content: center; align-items: center; margin-bottom: 40px;">
+            <h2 class="title" style="font-size: 4rem; margin-bottom: 0; flex-grow: 1; text-align: center;">Coreus tools</h2>
+        </div>
+        <div style="display: flex; justify-content: center; margin-bottom: 30px;">
+            <input type="text" id="toolsSearchInput" placeholder="Search tools..." style="width: 100%; max-width: 500px; padding: 12px 20px; font-size: 1rem; background-color: var(--secondary-bg); border: 2px solid var(--border-color); border-radius: 25px; color: var(--primary-text); outline: none; transition: all 0.3s ease;" />
+        </div>
+        <div id="toolsGrid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 30px; padding: 10px;"></div>
+
+        <!-- Floating Bottom Navbar for Tools View -->
+        <div class="bottom-navbar" style="position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); display: flex; align-items: center; background: rgba(0,0,0,0.8); backdrop-filter: blur(10px); border-radius: 50px; padding: 10px 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.3); z-index: 2001; border: 1px solid rgba(255,255,255,0.1);">
+            <button class="nav-icon-btn" style="background: none; border: none; cursor: pointer; padding: 8px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: background 0.3s;" onclick="location.reload()">
+                <img src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='30' cy='30' r='15' fill='%23fff'/><circle cx='70' cy='70' r='15' fill='%23fff'/><path d='M35 35 L65 65' stroke='%23fff' stroke-width='5'/></svg>" alt="Home" style="width: 24px; height: 24px;">
+            </button>
+            <div style="width: 1px; height: 24px; background: rgba(255,255,255,0.2); margin: 0 10px;"></div>
+            <button class="nav-icon-btn" style="background: none; border: none; cursor: pointer; padding: 8px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: background 0.3s;" onclick="hideToolsView()">
+                <i class="fas fa-network-wired" style="color: white; font-size: 20px;"></i>
+            </button>
+            <div style="width: 1px; height: 24px; margin: 0 10px;"></div>
+            <button class="nav-icon-btn" style="background: none; border: none; cursor: pointer; padding: 8px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: background 0.3s;" onclick="showGamesView()">
+                <i class="fas fa-gamepad" style="color: white; font-size: 20px;"></i>
+            </button>
+            <div style="width: 1px; height: 24px; margin: 0 10px;"></div>
+            <button class="nav-icon-btn" style="background: none; border: none; cursor: pointer; padding: 8px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: background 0.3s;" onclick="showToolsView()">
+                <i class="fas fa-tools" style="color: white; font-size: 20px;"></i>
+            </button>
+            <div style="width: 1px; height: 24px; margin: 0 10px;"></div>
+            <button class="nav-icon-btn" style="background: none; border: none; cursor: pointer; padding: 8px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: background 0.3s;" onclick="showAiView()">
+                <i class="fas fa-robot" style="color: white; font-size: 20px;"></i>
+            </button>
+            <div style="width: 1px; height: 24px; margin: 0 10px;"></div>
+            <button class="nav-icon-btn" style="background: none; border: none; cursor: pointer; padding: 8px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: background 0.3s;" onclick="showChatView()">
+                <i class="fas fa-comment-alt" style="color: white; font-size: 20px;"></i>
+            </button>
+            <div style="width: 1px; height: 24px; margin: 0 10px;"></div>
+            <button class="nav-icon-btn" style="background: none; border: none; cursor: pointer; padding: 8px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: background 0.3s;" onclick="showAboutView()">
+                <i class="fas fa-info-circle" style="color: white; font-size: 20px;"></i>
+            </button>
+            <div style="width: 1px; height: 24px; margin: 0 10px;"></div>
+            <button class="nav-icon-btn" style="background: none; border: none; cursor: pointer; padding: 8px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: background 0.3s;" onclick="showSettingsView()">
+                <i class="fas fa-cog" style="color: white; font-size: 20px;"></i>
+            </button>
+            <div style="width: 1px; height: 24px; background: rgba(255,255,255,0.2); margin: 0 10px;"></div>
+            <span class="navbar-time" style="color: #fff; font-size: 0.85rem; font-family: monospace; min-width: 50px; text-align: right; margin-right: 10px;">00:00:00</span>
+        </div>
+    </div>
+
+    <!-- About View Container -->
+    <div id="aboutView" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--primary-bg); z-index: 2000; overflow-y: auto; padding: 20px 20px 100px 20px;">
+        <div style="display: flex; justify-content: center; align-items: center; margin-bottom: 40px;">
+            <h2 class="title" style="font-size: 4rem; margin-bottom: 0; flex-grow: 1; text-align: center;">About Coreus</h2>
+        </div>
+        <div style="max-width: 800px; margin: 0 auto; background: var(--card-bg); padding: 2rem; border-radius: 10px;">
+            <p style="color: var(--primary-text); font-size: 1.2rem; line-height: 1.6; margin-bottom: 20px;">
+                Coreus is a complete UBG with an Ultraviolet proxy, 100 games, tools, that fits in a single HTML file. It was made by <a href="https://github.com/noodlelover1" style="color: var(--accent-color);">n00dle</a>.
+            </p>
+            <p style="color: var(--primary-text); font-size: 1.2rem; line-height: 1.6;">
+                Since it is a single HTML file, it is completely unblockable : you can paste the code in a code editor, deploy it using Vercel, Netlify, Surge or any other static host and even convert it in a permanent "data:" URL. See all methods on the <a href="https://github.com/noodlelover1/coreus" style="color: var(--accent-color);">GitHub</a>
+            </p>
+        </div>
+
+        <!-- Floating Bottom Navbar for About View -->
+        <div class="bottom-navbar" style="position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); display: flex; align-items: center; background: rgba(0,0,0,0.8); backdrop-filter: blur(10px); border-radius: 50px; padding: 10px 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.3); z-index: 2001; border: 1px solid rgba(255,255,255,0.1);">
+            <button class="nav-icon-btn" style="background: none; border: none; cursor: pointer; padding: 8px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: background 0.3s;" onclick="location.reload()">
+                <img src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='30' cy='30' r='15' fill='%23fff'/><circle cx='70' cy='70' r='15' fill='%23fff'/><path d='M35 35 L65 65' stroke='%23fff' stroke-width='5'/></svg>" alt="Home" style="width: 24px; height: 24px;">
+            </button>
+            <div style="width: 1px; height: 24px; background: rgba(255,255,255,0.2); margin: 0 10px;"></div>
+            <button class="nav-icon-btn" style="background: none; border: none; cursor: pointer; padding: 8px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: background 0.3s;" onclick="hideAboutView()">
+                <i class="fas fa-network-wired" style="color: white; font-size: 20px;"></i>
+            </button>
+            <div style="width: 1px; height: 24px; margin: 0 10px;"></div>
+            <button class="nav-icon-btn" style="background: none; border: none; cursor: pointer; padding: 8px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: background 0.3s;" onclick="showGamesView()">
+                <i class="fas fa-gamepad" style="color: white; font-size: 20px;"></i>
+            </button>
+            <div style="width: 1px; height: 24px; margin: 0 10px;"></div>
+            <button class="nav-icon-btn" style="background: none; border: none; cursor: pointer; padding: 8px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: background 0.3s;" onclick="showToolsView()">
+                <i class="fas fa-tools" style="color: white; font-size: 20px;"></i>
+            </button>
+            <div style="width: 1px; height: 24px; margin: 0 10px;"></div>
+            <button class="nav-icon-btn" style="background: none; border: none; cursor: pointer; padding: 8px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: background 0.3s;" onclick="showAiView()">
+                <i class="fas fa-robot" style="color: white; font-size: 20px;"></i>
+            </button>
+            <div style="width: 1px; height: 24px; margin: 0 10px;"></div>
+            <button class="nav-icon-btn" style="background: none; border: none; cursor: pointer; padding: 8px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: background 0.3s;" onclick="showChatView()">
+                <i class="fas fa-comment-alt" style="color: white; font-size: 20px;"></i>
+            </button>
+            <div style="width: 1px; height: 24px; margin: 0 10px;"></div>
+            <button class="nav-icon-btn" style="background: none; border: none; cursor: pointer; padding: 8px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: background 0.3s;" onclick="showAboutView()">
+                <i class="fas fa-info-circle" style="color: white; font-size: 20px;"></i>
+            </button>
+            <div style="width: 1px; height: 24px; margin: 0 10px;"></div>
+            <button class="nav-icon-btn" style="background: none; border: none; cursor: pointer; padding: 8px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: background 0.3s;" onclick="showSettingsView()">
+                <i class="fas fa-cog" style="color: white; font-size: 20px;"></i>
+            </button>
+            <div style="width: 1px; height: 24px; background: rgba(255,255,255,0.2); margin: 0 10px;"></div>
+            <span class="navbar-time" style="color: #fff; font-size: 0.85rem; font-family: monospace; min-width: 50px; text-align: right; margin-right: 10px;">00:00:00</span>
+        </div>
+    </div>
+    <script>
+        let currentProxyIndex = 0;
+        let targetUrl = '';
+
+        function showStatus(message, type = 'loading') {
+            const statusDiv = document.getElementById('statusDiv');
+            statusDiv.textContent = message;
+            statusDiv.className = `status ${type}`;
+            statusDiv.style.display = 'block';
+        }
+
+        function hideStatus() {
+            document.getElementById('statusDiv').style.display = 'none';
+        }
+
+        function isValidUrl(string) {
+            try {
+                // Add protocol if missing
+                if (!string.startsWith('http://') && !string.startsWith('https://')) {
+                    string = 'https://' + string;
+                }
+                new URL(string);
+                return string;
+            } catch (_) {
+                return false;
+            }
+        }
+
+        function encodeUrl(url) {
+            return encodeURIComponent(url);
+        }
+
+        async function testProxy(proxyUrl, targetUrl) {
+            return new Promise((resolve) => {
+                const iframe = document.createElement('iframe');
+                iframe.style.display = 'none';
+                iframe.src = proxyUrl + encodeUrl(targetUrl);
+
+                const timeout = setTimeout(() => {
+                    document.body.removeChild(iframe);
+                    resolve(false);
+                }, 5000);
+
+                iframe.onload = () => {
+                    clearTimeout(timeout);
+                    try {
+                        const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+                        if (iframeDoc && !iframeDoc.location.href.includes('about:blank')) {
+                            document.body.removeChild(iframe);
+                            resolve(true);
+                        } else {
+                            document.body.removeChild(iframe);
+                            resolve(false);
+                        }
+                    } catch (e) {
+                        document.body.removeChild(iframe);
+                        resolve(true);
+                    }
+                };
+
+                iframe.onerror = () => {
+                    clearTimeout(timeout);
+                    document.body.removeChild(iframe);
+                    resolve(false);
+                };
+
+                document.body.appendChild(iframe);
+            });
+        }
+
+        async function tryProxies() {
+            const proxyBtn = document.getElementById('proxyBtn');
+            proxyBtn.disabled = true;
+            proxyBtn.textContent = 'Connecting...';
+
+            if (proxyMode === 'single') {
+                // Use only the selected single proxy
+                showStatus(`Using selected proxy: ${selectedProxy}`, 'loading');
+
+                const works = await testProxy(selectedProxy, targetUrl);
+
+                if (works) {
+                    showStatus('Connected via selected proxy', 'success');
+                    setTimeout(() => {
+                        openProxy(selectedProxy + encodeUrl(targetUrl));
+                    }, 1000);
+                    return;
+                } else {
+                    showStatus('Selected proxy is currently unavailable. Please try another proxy or switch to Auto Fallback mode.', 'error');
+                    proxyBtn.disabled = false;
+                    proxyBtn.textContent = 'Access via Proxy';
+                    return;
+                }
+            } else {
+                // Use fallback mode (try all proxies in sequence)
+                for (let i = 0; i < proxyAPIs.length; i++) {
+                    const proxyUrl = proxyAPIs[i];
+                    showStatus(`Trying proxy ${i + 1}/${proxyAPIs.length}: ${proxyUrl}`, 'loading');
+
+                    const works = await testProxy(proxyUrl, targetUrl);
+
+                    if (works) {
+                        showStatus(`Connected via proxy ${i + 1}`, 'success');
+                        setTimeout(() => {
+                            openProxy(proxyUrl + encodeUrl(targetUrl));
+                        }, 1000);
+                        return;
+                    }
+                }
+
+                // All proxies failed
+                showStatus('All proxy services are currently unavailable. Please try again later.', 'error');
+                proxyBtn.disabled = false;
+                proxyBtn.textContent = 'Access via Proxy';
+            }
+        }
+
+        function injectIframeStyles(iframe) {
+            try {
+                const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+                if (iframeDoc) {
+                    const style = iframeDoc.createElement('style');
+                    style.textContent = `
+                        body {
+                            background-color: var(--primary-bg) !important;
+                            color: var(--primary-text) !important;
+                        }
+                        * {
+                            color: var(--primary-text) !important;
+                        }
+                        p, div, span, h1, h2, h3, h4, h5, h6, li, td, th, a {
+                            color: var(--primary-text) !important;
+                        }
+                        a:visited {
+                            color: var(--secondary-text) !important;
+                        }
+                        input, textarea, select {
+                            background-color: var(--secondary-bg) !important;
+                            color: var(--primary-text) !important;
+                            border: 1px solid var(--border-color) !important;
+                        }
+                    `;
+
+                    const head = iframeDoc.head || iframeDoc.getElementsByTagName('head')[0];
+                    if (head) {
+                        head.appendChild(style);
+                    } else {
+                        const body = iframeDoc.body || iframeDoc.getElementsByTagName('body')[0];
+                        if (body) {
+                            body.appendChild(style);
+                        }
+                    }
+                }
+            } catch (e) {
+                console.log('Cannot inject styles due to cross-origin restrictions');
+            }
+        }
+
+        function openProxy(proxyUrl) {
+            const proxyFrame = document.getElementById('proxyFrame');
+            const proxyIframe = document.getElementById('proxyIframe');
+            const frameUrl = document.getElementById('frameUrl');
+            const proxyLoadingOverlay = document.getElementById('proxyLoadingOverlay');
+
+            frameUrl.textContent = targetUrl;
+
+            proxyLoadingOverlay.classList.remove('hidden');
+
+            proxyFrame.style.display = 'block';
+            document.body.style.overflow = 'hidden';
+
+            proxyIframe.src = proxyUrl;
+
+            proxyIframe.onload = function() {
+                setTimeout(() => {
+                    injectIframeStyles(proxyIframe);
+
+                    proxyLoadingOverlay.classList.add('hidden');
+                }, 5000);
+            };
+
+            const proxyBtn = document.getElementById('proxyBtn');
+            proxyBtn.disabled = false;
+            proxyBtn.textContent = 'Access via Proxy';
+            hideStatus();
+        }
+
+        function closeProxy() {
+            const proxyFrame = document.getElementById('proxyFrame');
+            const proxyIframe = document.getElementById('proxyIframe');
+
+            proxyFrame.style.display = 'none';
+            proxyIframe.src = 'about:blank';
+            document.body.style.overflow = 'auto';
+        }
+
+        function startProxy() {
+            const urlInput = document.getElementById('urlInput');
+            const inputUrl = urlInput.value.trim();
+
+            if (!inputUrl) {
+                showStatus('Please enter a URL', 'error');
+                setTimeout(hideStatus, 3000);
+                return;
+            }
+
+            // Check if input contains a domain name with common TLDs
+            const domainPattern = /\.(com|org|net|io|gov|edu|int|mil|arpa|co|uk|de|jp|fr|au|ca|ru|br|in|it|nl|se|no|dk|fi|es|pl|be|ch|at|cz|ie|pt|hu|gr|il|cn|hk|kr|sg|mx|ar|cl|pe|ve|uy|py|bo|ec|gt|hn|sv|ni|cr|pa|do|cu|jm|ht|bs|bz|sr|gy|fk|gg|je|im|ai|bm|ky|lc|vc|ag|gd|kn|ms|tc|vg|vi|pr|as|gu|mp|pw|fm|mh|ws|to|vu|sb|nc|pf|wf|ck|nu|tk|pn|nf|cc|cx|hm|aq|gs|tf)$/i;
+            
+            if (domainPattern.test(inputUrl)) {
+                // It's a domain, add https:// if not present
+                if (!inputUrl.startsWith('http://') && !inputUrl.startsWith('https://')) {
+                    targetUrl = 'https://' + inputUrl;
+                } else {
+                    targetUrl = inputUrl;
+                }
+            } else {
+                // It's a search query, use DuckDuckGo
+                targetUrl = 'https://duckduckgo.com/?q=' + encodeURIComponent(inputUrl);
+            }
+            
+            tryProxies();
+        }
+        
+        function validateAndStart() {
+            const urlInput = document.getElementById('urlInput');
+            const inputUrl = urlInput.value.trim();
+            
+            if (!inputUrl) {
+                alert('URL is required!');
+                return false;
+            }
+            
+            if(!checkUrlFormat(inputUrl)) {
+                alert('Invalid URL format!');
+                return false;
+            }
+            
+            startProxy();
+            return true;
+        }
+
+        // Handle Enter key in input
+        document.getElementById('urlInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                startProxy();
+            }
+        });
+
+        // Handle Escape key to close proxy
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeProxy();
+            }
+        });
+
+        // List of proxy API endpoints
+        const proxyAPIs = [
+            'https://ev2.rhw.one/active/embed#',
+            'https://embeddr.pages.dev/embed#',
+            'https://embeddr.rhw.one/embed#',
+            'https://api.allorigins.win/raw?url=',
+            'https://api.cors.lol/?url=',
+            'https://yacdn.org/proxy/'
+        ];
+
+        // Settings variables
+        let proxyMode = 'fallback';
+        let selectedProxy = proxyAPIs[0];
+        
+        var debugMode = false;
+        const maxRetries = 3;
+
+        function toggleSettingsModal() {
+            const modal = document.getElementById('settingsModal');
+            if (modal.style.display === 'none') {
+                loadCurrentSettings();
+                modal.style.display = 'flex';
+            } else {
+                modal.style.display = 'none';
+            }
+        }
+        
+        function toggleExtraModal(){
+            console.log("Toggling extra modal");
+        }
+
+        function loadCurrentSettings() {
+            document.querySelector(`input[name="proxyMode"][value="${proxyMode}"]`).checked = true;
+
+            document.getElementById('singleProxySelection').style.display =
+                proxyMode === 'single' ? 'block' : 'none';
+
+            document.getElementById('proxySelect').value = selectedProxy;
+        }
+
+        function setProxyMode(mode) {
+            proxyMode = mode;
+            document.getElementById('singleProxySelection').style.display =
+                mode === 'single' ? 'block' : 'none';
+        }
+
+        function saveSettings() {
+            proxyMode = document.querySelector('input[name="proxyMode"]:checked').value;
+            selectedProxy = document.getElementById('proxySelect').value;
+
+            document.getElementById('settingsModal').style.display = 'none';
+        }
+
+        async function showGamesView() {
+            document.querySelector('.container').style.display = 'none';
+            document.getElementById('toolsView').style.display = 'none';
+            document.getElementById('aboutView').style.display = 'none';
+            document.getElementById('chatView').style.display = 'none';
+            document.getElementById('settingsView').style.display = 'none';
+            document.getElementById('aiView').style.display = 'none';
+
+            document.getElementById('gamesView').style.display = 'block';
+
+            await loadGames();
+
+            previousView = 'games';
+        }
+
+        function hideGamesView() {
+            document.getElementById('gamesView').style.display = 'none';
+            document.getElementById('toolsView').style.display = 'none';
+            document.getElementById('aboutView').style.display = 'none';
+            document.getElementById('chatView').style.display = 'none';
+            document.getElementById('settingsView').style.display = 'none';
+            document.getElementById('aiView').style.display = 'none';
+            document.querySelector('.container').style.display = 'block';
+        }
+
+        function showGamePopup(gamePath) {
+            previousView = 'games';
+
+            document.getElementById('gamesView').style.display = 'none';
+
+            document.getElementById('gamePopup').style.display = 'block';
+
+            const gameUrl = `https://noodlelover1.github.io/coreus-assets/${gamePath}`;
+            document.getElementById('gameUrlDisplay').textContent = gameUrl;
+
+            const gameIframe = document.getElementById('gameIframe');
+                  const gameLoadingOverlay = document.getElementById('gameLoadingOverlay');
+
+            gameLoadingOverlay.classList.remove('hidden');
+
+            gameIframe.onload = null;
+            gameIframe.onerror = null;
+
+            // Force hide overlay after 0.5 seconds regardless of iframe load status
+            const forceHideTimeout = setTimeout(() => {
+                gameLoadingOverlay.classList.add('hidden');
+            }, 500);
+
+            const handleLoadCompletion = function() {
+                clearTimeout(forceHideTimeout);
+                gameLoadingOverlay.classList.add('hidden');
+            };
+
+            gameIframe.src = gameUrl;
+
+            gameIframe.onload = handleLoadCompletion;
+
+            gameIframe.onerror = function() {
+                console.log("direct load failed, trying embeddr...");
+                const embeddrUrl = `https://embeddr.rhw.one/embed#${encodeURIComponent(gameUrl)}`;
+
+                gameLoadingOverlay.classList.remove('hidden');
+
+                // Reset force hide timeout for embeddr attempt
+                clearTimeout(forceHideTimeout);
+                const embeddrForceHideTimeout = setTimeout(() => {
+                    gameLoadingOverlay.classList.add('hidden');
+                }, 500);
+
+            gameIframe.src = embeddrUrl;
+
+                gameIframe.onerror = function() {
+                    console.log("embeddr also failed to load the game");
+                    clearTimeout(embeddrForceHideTimeout);
+                    gameLoadingOverlay.classList.add('hidden');
+                };
+
+                gameIframe.onload = function() {
+                    clearTimeout(embeddrForceHideTimeout);
+                    gameLoadingOverlay.classList.add('hidden');
+                };
+            };
+        }
+
+        let previousView = 'main';
+
+        function closeGamePopup() {
+    document.getElementById('gamePopup').style.display = 'none';
+
+        const gameLoadingOverlay = document.getElementById('gameLoadingOverlay');
+    gameLoadingOverlay.classList.add('hidden');
+
+        document.getElementById('gamesView').style.display = 'none';
+    document.getElementById('toolsView').style.display = 'none';
+    document.getElementById('aboutView').style.display = 'none';
+    document.getElementById('chatView').style.display = 'none';
+    document.getElementById('settingsView').style.display = 'none';
+    document.querySelector('.container').style.display = 'none';
+
+    if (previousView === 'games') {
+        document.getElementById('gamesView').style.display = 'block';
+    } else if (previousView === 'tools') {
+        document.getElementById('toolsView').style.display = 'block';
+    } else if (previousView === 'about') {
+        document.getElementById('aboutView').style.display = 'block';
+    } else if (previousView === 'chat') {
+        document.getElementById('chatView').style.display = 'block';
+    } else if (previousView === 'settings') {
+        document.getElementById('settingsView').style.display = 'block';
+    } else {
+        document.querySelector('.container').style.display = 'block';
+    }
+
+    document.getElementById('gameIframe').src = 'about:blank';
+}
+
+        function showAboutView() {
+            document.querySelector('.container').style.display = 'none';
+            document.getElementById('gamesView').style.display = 'none';
+            document.getElementById('toolsView').style.display = 'none';
+            document.getElementById('chatView').style.display = 'none';
+            document.getElementById('settingsView').style.display = 'none';
+            document.getElementById('aiView').style.display = 'none';
+
+            document.getElementById('aboutView').style.display = 'block';
+
+            previousView = 'about';
+        }
+
+        function hideAboutView() {
+            document.getElementById('aboutView').style.display = 'none';
+            document.getElementById('gamesView').style.display = 'none';
+            document.getElementById('toolsView').style.display = 'none';
+            document.getElementById('chatView').style.display = 'none';
+            document.getElementById('settingsView').style.display = 'none';
+            document.getElementById('aiView').style.display = 'none';
+            document.querySelector('.container').style.display = 'block';
+        }
+
+        async function showToolsView() {
+            document.querySelector('.container').style.display = 'none';
+            document.getElementById('gamesView').style.display = 'none';
+            document.getElementById('aboutView').style.display = 'none';
+            document.getElementById('chatView').style.display = 'none';
+            document.getElementById('settingsView').style.display = 'none';
+            document.getElementById('aiView').style.display = 'none';
+
+            document.getElementById('toolsView').style.display = 'block';
+
+            await loadTools();
+
+            previousView = 'tools';
+        }
+
+        function hideToolsView() {
+            document.getElementById('toolsView').style.display = 'none';
+            document.getElementById('gamesView').style.display = 'none';
+            document.getElementById('aboutView').style.display = 'none';
+            document.getElementById('chatView').style.display = 'none';
+            document.getElementById('settingsView').style.display = 'none';
+            document.getElementById('aiView').style.display = 'none';
+            document.querySelector('.container').style.display = 'block';
+        }
+
+        async function loadTools() {
+            try {
+                const response = await fetch('https://cdn.jsdelivr.net/gh/noodlelover1/coreus-assets@main/tools.json');
+                const tools = await response.json();
+
+                const toolsGrid = document.getElementById('toolsGrid');
+                toolsGrid.innerHTML = '';
+
+                tools.forEach(tool => {
+                    const title = tool.title || tool.name || 'Unknown Tool';
+                    const imagePath = tool.image || tool.img || '';
+                    const toolPath = tool.toolPath || tool.href || tool.path || tool.url || '';
+
+                    const toolCard = document.createElement('div');
+                    toolCard.className = 'tool-card';
+                    toolCard.setAttribute('data-tool-name', title.toLowerCase());
+                    toolCard.style.cssText = `
+                        display: flex;
+                        flex-direction: column;
+                        align-items: center;
+                        text-align: center;
+                        background: transparent;
+                        border-radius: 10px;
+                        padding: 15px;
+                        cursor: pointer;
+                        transition: transform 0.3s;
+                    `;
+
+                    toolCard.innerHTML = `
+                        <img src="https://cdn.jsdelivr.net/gh/noodlelover1/coreus-assets@main/${imagePath}"
+                             alt="${title}"
+                             style="width: 150px; height: 150px; object-fit: cover; border-radius: 15px; margin-bottom: 15px; border: 1px solid var(--border-color);"
+                             onerror="this.onerror=null; this.src='data:image/svg+xml,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'150\' height=\'150\' viewBox=\'0 0 150 150\'><rect width=\'150\' height=\'150\' fill=\'%23333\'/><text x=\'75\' y=\'85\' font-family=\'Arial\' font-size=\'14\' fill=\'%23fff\' text-anchor=\'middle\'>No Image</text></svg>';">
+                        <span style="color: var(--primary-text); font-size: 1.2rem; margin-top: 10px;">${title}</span>
+                    `;
+
+                    toolCard.addEventListener('click', () => {
+                        if (toolPath) {
+                            showToolPopup(toolPath);
+                        }
+                    });
+
+                    toolCard.addEventListener('mouseenter', () => {
+                        toolCard.style.transform = 'scale(1.05)';
+                    });
+
+                    toolCard.addEventListener('mouseleave', () => {
+                        toolCard.style.transform = 'scale(1)';
+                    });
+
+                    toolsGrid.appendChild(toolCard);
+                });
+
+                // Add search functionality
+                const toolsSearchInput = document.getElementById('toolsSearchInput');
+                if (toolsSearchInput) {
+                    toolsSearchInput.addEventListener('input', function() {
+                        filterTools(this.value);
+                    });
+                }
+            } catch (error) {
+                console.error('Error loading tools:', error);
+                document.getElementById('toolsGrid').innerHTML = '<p style="color: var(--primary-text); width: 100%; text-align: center;">Error loading tools. Please try again later.</p>';
+            }
+        }
+
+        function filterTools(searchTerm) {
+            const searchLower = searchTerm.toLowerCase();
+            const toolCards = document.querySelectorAll('.tool-card');
+
+            toolCards.forEach(card => {
+                const toolName = card.getAttribute('data-tool-name');
+                if (toolName.includes(searchLower)) {
+                    card.style.display = 'flex';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+
+    function showToolPopup(toolPath) {
+            previousView = 'tools';
+
+            document.getElementById('toolsView').style.display = 'none';
+
+            document.getElementById('gamePopup').style.display = 'block';
+
+            const toolUrl = `https://noodlelover1.github.io/coreus-assets/${toolPath}`;
+            document.getElementById('gameUrlDisplay').textContent = toolUrl;
+
+            const gameIframe = document.getElementById('gameIframe');
+                    const gameLoadingOverlay = document.getElementById('gameLoadingOverlay');
+
+            gameLoadingOverlay.classList.remove('hidden');
+
+            gameIframe.onload = null;
+            gameIframe.onerror = null;
+
+            // Force hide overlay after 0.5 seconds regardless of iframe load status
+            const forceHideTimeout = setTimeout(() => {
+                gameLoadingOverlay.classList.add('hidden');
+            }, 500);
+
+            const handleLoadCompletion = function() {
+                clearTimeout(forceHideTimeout);
+                gameLoadingOverlay.classList.add('hidden');
+            };
+
+            gameIframe.src = toolUrl;
+
+            gameIframe.onload = handleLoadCompletion;
+
+            gameIframe.onerror = function() {
+                console.log("direct load failed, trying embeddr...");
+                const embeddrUrl = `https://embeddr.rhw.one/embed#${encodeURIComponent(toolUrl)}`;
+
+                gameLoadingOverlay.classList.remove('hidden');
+
+                // Reset force hide timeout for embeddr attempt
+                clearTimeout(forceHideTimeout);
+                const embeddrForceHideTimeout = setTimeout(() => {
+                    gameLoadingOverlay.classList.add('hidden');
+                }, 500);
+
+    gameIframe.src = embeddrUrl;
+
+                gameIframe.onerror = function() {
+                    console.log("embeddr also failed to load the tool");
+                    clearTimeout(embeddrForceHideTimeout);
+                    gameLoadingOverlay.classList.add('hidden');
+                };
+
+                gameIframe.onload = function() {
+                    clearTimeout(embeddrForceHideTimeout);
+                    gameLoadingOverlay.classList.add('hidden');
+                };
+            };
+        }
+
+        async function loadGames() {
+            try {
+                const response = await fetch('https://cdn.jsdelivr.net/gh/noodlelover1/coreus-assets@main/games.json');
+                const games = await response.json();
+
+                console.log('Games data:', games);
+
+                const gamesGrid = document.getElementById('gamesGrid');
+                gamesGrid.innerHTML = '';
+
+                games.forEach(game => {
+                    const title = game.title || game.name || 'Unknown Game';
+                    const imagePath = game.image || game.img || '';
+                    const gamePath = game.gamePath || game.href || game.path || game.url || '';
+
+                    const gameCard = document.createElement('div');
+                    gameCard.className = 'game-card';
+                    gameCard.setAttribute('data-game-name', title.toLowerCase());
+                    gameCard.style.cssText = `
+                        display: flex;
+                        flex-direction: column;
+                        align-items: center;
+                        text-align: center;
+                        background: transparent;
+                        border-radius: 10px;
+                        padding: 15px;
+                        cursor: pointer;
+                        transition: transform 0.3s, background 0.3s;
+                    `;
+
+                    gameCard.innerHTML = `
+                        <img src="https://cdn.jsdelivr.net/gh/noodlelover1/coreus-assets@main/${imagePath}"
+                             alt="${title}"
+                             style="width: 150px; height: 150px; object-fit: cover; border-radius: 15px; margin-bottom: 15px; border: 1px solid var(--border-color);"
+                             onerror="this.onerror=null; this.src='data:image/svg+xml,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'150\' height=\'150\' viewBox=\'0 0 150 150\'><rect width=\'150\' height=\'150\' fill=\'%23333\'/><text x=\'75\' y=\'85\' font-family=\'Arial\' font-size=\'14\' fill=\'%23fff\' text-anchor=\'middle\'>No Image</text></svg>';">
+                        <span style="color: var(--primary-text); font-size: 1.2rem; margin-top: 10px;">${title}</span>
+                    `;
+
+                    gameCard.addEventListener('click', () => {
+                        if (gamePath) {
+                            showGamePopup(gamePath);
+                        }
+                    });
+
+                    gameCard.addEventListener('mouseenter', () => {
+                        gameCard.style.transform = 'scale(1.05)';
+                    });
+
+                    gameCard.addEventListener('mouseleave', () => {
+                        gameCard.style.transform = 'scale(1)';
+                    });
+
+                    gamesGrid.appendChild(gameCard);
+                });
+
+                // Add search functionality
+                const gamesSearchInput = document.getElementById('gamesSearchInput');
+                if (gamesSearchInput) {
+                    gamesSearchInput.addEventListener('input', function() {
+                        filterGames(this.value);
+                    });
+                }
+            } catch (error) {
+                console.error('Error loading games:', error);
+                document.getElementById('gamesGrid').innerHTML = '<p style="color: var(--primary-text); width: 100%; text-align: center;">Error loading games. Please try again later.</p>';
+            }
+        }
+
+        function filterGames(searchTerm) {
+            const searchLower = searchTerm.toLowerCase();
+            const gameCards = document.querySelectorAll('.game-card');
+
+            gameCards.forEach(card => {
+                const gameName = card.getAttribute('data-game-name');
+                if (gameName.includes(searchLower)) {
+                    card.style.display = 'flex';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+
+        // Shows chat view
+        function showChatView() {
+            // hide all other views first
+            document.querySelector('.container').style.display = 'none';
+            document.getElementById('gamesView').style.display = 'none';
+            document.getElementById('toolsView').style.display = 'none';
+            document.getElementById('aboutView').style.display = 'none';
+            document.getElementById('settingsView').style.display = 'none';
+            document.getElementById('aiView').style.display = 'none';
+
+            // show chat view
+            document.getElementById('chatView').style.display = 'block';
+
+            // set previous view to chat
+            previousView = 'chat';
+        }
+
+        // function to hide the chat view and return to main
+        function hideChatView() {
+            document.getElementById('chatView').style.display = 'none';
+            document.getElementById('gamesView').style.display = 'none';
+            document.getElementById('toolsView').style.display = 'none';
+            document.getElementById('aboutView').style.display = 'none';
+            document.getElementById('settingsView').style.display = 'none';
+            document.getElementById('aiView').style.display = 'none';
+            document.querySelector('.container').style.display = 'block';
+        }
+
+        // function to show settings view
+        function showSettingsView() {
+            // hide all other views first
+            document.querySelector('.container').style.display = 'none';
+            document.getElementById('gamesView').style.display = 'none';
+            document.getElementById('toolsView').style.display = 'none';
+            document.getElementById('aboutView').style.display = 'none';
+            document.getElementById('chatView').style.display = 'none';
+            document.getElementById('aiView').style.display = 'none';
+
+            // show settings view
+            document.getElementById('settingsView').style.display = 'block';
+
+            // load current settings into the view
+            loadCurrentSettings();
+
+            // set previous view to settings
+            previousView = 'settings';
+        }
+
+        // function to hide the settings view and return to main
+        function hideSettingsView() {
+            document.getElementById('settingsView').style.display = 'none';
+            document.getElementById('gamesView').style.display = 'none';
+            document.getElementById('toolsView').style.display = 'none';
+            document.getElementById('aboutView').style.display = 'none';
+            document.getElementById('chatView').style.display = 'none';
+            document.getElementById('aiView').style.display = 'none';
+            document.querySelector('.container').style.display = 'block';
+        }
+
+        // Theme functions
+        function changeTheme(theme) {
+            const body = document.body;
+            body.className = '';
+            if (theme !== 'default') {
+                body.classList.add(`theme-${theme}`);
+            }
+        }
+
+        // This function was added later - not sure if it's needed
+        function checkUrlFormat(url) {
+            var pattern = /^https?:\/\/(?:[-\w.])+(?:\:[0-9]+)?(?:\/(?:[\w\/_.])*(?:\?(?:[\w&=%.])*)?(?:\#(?:[\w.])*)?)?$/;
+            return pattern.test(url);
+        }
+
+        // Function to update time in all navbars
+        function updateNavbarTime() {
+            const now = new Date();
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const seconds = String(now.getSeconds()).padStart(2, '0');
+            const timeString = `${hours}:${minutes}:${seconds}`;
+            
+            // Update all navbar time elements
+            const timeElements = document.querySelectorAll('.navbar-time');
+            timeElements.forEach(el => {
+                el.textContent = timeString;
+            });
+        }
+
+        // Start the time update interval (updates every second)
+        setInterval(updateNavbarTime, 1000);
+        
+        // Initial call to update time immediately
+        updateNavbarTime();
+
+        // Attach event listeners after DOM is loaded
+        window.addEventListener('load', function() {
+            document.getElementById('urlInput').focus();
+
+            document.getElementById('settingsBtn').addEventListener('click', toggleSettingsModal);
+        });
+    </script>
+    
+    <!-- AI Chat View Container -->
+    <div id="aiView" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--primary-bg); z-index: 2000; overflow: hidden; padding: 0;">
+        <div style="display: flex; justify-content: center; align-items: center; height: 100%; width: 100%; padding-bottom: 100px;">
+            <div style="width: 90%; max-width: 900px; height: 80vh; background: #0d0d0d; border-radius: 20px; overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 8px 32px rgba(0,0,0,0.8); border: 2px solid #333333;">
+                <!-- AI Chat Header -->
+                <div style="padding: 20px; background: rgba(0,0,0,0.6); border-bottom: 2px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <i class="fas fa-robot" style="color: white; font-size: 24px;"></i>
+                        <span style="color: var(--primary-text); font-size: 1.3rem; font-weight: 500;">AI Assistant</span>
+                    </div>
+                    <button class="nav-icon-btn" style="background: #000; border: none; cursor: pointer; padding: 8px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: background 0.3s;" onclick="clearChatHistory()" title="Clear chat history">
+                        <i class="fas fa-trash" style="color: white; font-size: 18px;"></i>
+                    </button>
+                </div>
+                
+                <!-- Messages Container -->
+                <div id="aiMessagesContainer" style="flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 15px;">
+                    <!-- Messages will be added here dynamically -->
+                </div>
+                
+                <!-- Input Area -->
+                <div style="padding: 20px; background: rgba(0,0,0,0.6); border-top: 2px solid var(--border-color); display: flex; gap: 10px;">
+                    <input type="text" id="aiMessageInput" placeholder="Ask me anything..." style="flex: 1; padding: 12px 16px; background: var(--secondary-bg); border: 2px solid var(--border-color); border-radius: 25px; color: var(--primary-text); outline: none; transition: all 0.3s; font-size: 1rem;" />
+                    <button id="aiSendBtn" style="padding: 8px 24px; background: #051B0B; border: 2px solid #0d3b1f; color: white; border-radius: 25px; cursor: pointer; transition: all 0.3s; font-weight: 500; display: flex; align-items: center; gap: 8px;" onclick="sendAiMessage()">
+                        <i class="fas fa-paper-plane"></i> Send
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Floating Bottom Navbar for AI View -->
+        <div class="bottom-navbar" style="position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); display: flex; align-items: center; background: rgba(0,0,0,0.8); backdrop-filter: blur(10px); border-radius: 50px; padding: 10px 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.3); z-index: 2001; border: 1px solid rgba(255,255,255,0.1);">
+            <button class="nav-icon-btn" style="background: none; border: none; cursor: pointer; padding: 8px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: background 0.3s;" onclick="location.reload()">
+                <img src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='30' cy='30' r='15' fill='%23fff'/><circle cx='70' cy='70' r='15' fill='%23fff'/><path d='M35 35 L65 65' stroke='%23fff' stroke-width='5'/></svg>" alt="Home" style="width: 24px; height: 24px;">
+            </button>
+            <div style="width: 1px; height: 24px; background: rgba(255,255,255,0.2); margin: 0 10px;"></div>
+            <button class="nav-icon-btn" style="background: none; border: none; cursor: pointer; padding: 8px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: background 0.3s;" onclick="hideAiView()">
+                <i class="fas fa-network-wired" style="color: white; font-size: 20px;"></i>
+            </button>
+            <div style="width: 1px; height: 24px; margin: 0 10px;"></div>
+            <button class="nav-icon-btn" style="background: none; border: none; cursor: pointer; padding: 8px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: background 0.3s;" onclick="showGamesView()">
+                <i class="fas fa-gamepad" style="color: white; font-size: 20px;"></i>
+            </button>
+            <div style="width: 1px; height: 24px; margin: 0 10px;"></div>
+            <button class="nav-icon-btn" style="background: none; border: none; cursor: pointer; padding: 8px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: background 0.3s;" onclick="showToolsView()">
+                <i class="fas fa-tools" style="color: white; font-size: 20px;"></i>
+            </button>
+            <div style="width: 1px; height: 24px; margin: 0 10px;"></div>
+            <button class="nav-icon-btn" style="background: none; border: none; cursor: pointer; padding: 8px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: background 0.3s;" onclick="showAiView()">
+                <i class="fas fa-robot" style="color: white; font-size: 20px;"></i>
+            </button>
+            <div style="width: 1px; height: 24px; margin: 0 10px;"></div>
+            <button class="nav-icon-btn" style="background: none; border: none; cursor: pointer; padding: 8px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: background 0.3s;" onclick="showChatView()">
+                <i class="fas fa-comment-alt" style="color: white; font-size: 20px;"></i>
+            </button>
+            <div style="width: 1px; height: 24px; margin: 0 10px;"></div>
+            <button class="nav-icon-btn" style="background: none; border: none; cursor: pointer; padding: 8px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: background 0.3s;" onclick="showAboutView()">
+                <i class="fas fa-info-circle" style="color: white; font-size: 20px;"></i>
+            </button>
+            <div style="width: 1px; height: 24px; margin: 0 10px;"></div>
+            <button class="nav-icon-btn" style="background: none; border: none; cursor: pointer; padding: 8px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: background 0.3s;" onclick="showSettingsView()">
+                <i class="fas fa-cog" style="color: white; font-size: 20px;"></i>
+            </button>
+            <div style="width: 1px; height: 24px; background: rgba(255,255,255,0.2); margin: 0 10px;"></div>
+            <span class="navbar-time" style="color: #fff; font-size: 0.85rem; font-family: monospace; min-width: 50px; text-align: right; margin-right: 10px;">00:00:00</span>
+        </div>
+    </div>
+
+    <script src="//cdn.jsdelivr.net/npm/eruda"></script>
+    <script>eruda.init();</script>
+
+    <script>
+        // animation effect
+        document.addEventListener('DOMContentLoaded', function() {
+            const title = document.querySelector('.title');
+            if(title) {
+                title.addEventListener('mouseover', function() {
+                    this.style.textShadow = '0 0 10px rgba(255,255,255,0.5)';
+                });
+                
+                title.addEventListener('mouseout', function() {
+                    this.style.textShadow = 'none';
+                });
+            }
+        });
+
+        // AI Chat Functions
+        function showAiView() {
+            // hide all other views first
+            document.querySelector('.container').style.display = 'none';
+            document.getElementById('gamesView').style.display = 'none';
+            document.getElementById('toolsView').style.display = 'none';
+            document.getElementById('aboutView').style.display = 'none';
+            document.getElementById('chatView').style.display = 'none';
+            document.getElementById('settingsView').style.display = 'none';
+
+            // show AI view
+            document.getElementById('aiView').style.display = 'block';
+
+            // set previous view to AI
+            previousView = 'ai';
+
+            // Focus on input
+            setTimeout(() => {
+                document.getElementById('aiMessageInput').focus();
+            }, 100);
+        }
+
+        function hideAiView() {
+            document.getElementById('aiView').style.display = 'none';
+            document.getElementById('gamesView').style.display = 'none';
+            document.getElementById('toolsView').style.display = 'none';
+            document.getElementById('aboutView').style.display = 'none';
+            document.getElementById('chatView').style.display = 'none';
+            document.getElementById('settingsView').style.display = 'none';
+            document.querySelector('.container').style.display = 'block';
+        }
+
+        // Store pending message for after login
+        let pendingAiMessage = null;
+
+        // Check if user is logged in with Puter using official API
+        async function isPuterLoggedIn() {
+            try {
+                // Official Puter.js method to check login status
+                const user = await puter.auth.getUser();
+                return !!user;
+            } catch (error) {
+                // User is not logged in or error occurred
+                return false;
+            }
+        }
+
+        // Show Puter login modal
+        function showPuterLoginModal(message) {
+            pendingAiMessage = message;
+            document.getElementById('puterLoginModal').style.display = 'flex';
+        }
+
+        // Close Puter login modal
+        function closePuterLoginModal() {
+            document.getElementById('puterLoginModal').style.display = 'none';
+            pendingAiMessage = null;
+        }
+
+        // Handle Puter sign in with official API
+        async function handlePuterSignIn() {
+            const signInBtn = document.getElementById('puterSignInBtn');
+            signInBtn.disabled = true;
+            signInBtn.innerHTML = '<i class="fas fa-spinner fa-spin" style="margin-right: 0.5rem;"></i> Signing in...';
+
+            try {
+                // Official Puter.js sign in method (from documentation)
+                await puter.auth.signIn();
+                
+                // Save the message before closing modal
+                const msg = pendingAiMessage;
+                
+                // Close modal
+                closePuterLoginModal();
+                
+                // Reset button state
+                signInBtn.disabled = false;
+                signInBtn.innerHTML = '<i class="fas fa-sign-in-alt" style="margin-right: 0.5rem;"></i> Login with Puter';
+                
+                // Send the pending message
+                if (msg) {
+                    await sendAiMessage(msg);
+                }
+            } catch (error) {
+                console.error('Puter sign in error:', error);
+                signInBtn.disabled = false;
+                signInBtn.innerHTML = '<i class="fas fa-sign-in-alt" style="margin-right: 0.5rem;"></i> Login with Puter';
+                alert('Failed to sign in with Puter. Please try again.');
+            }
+        }
+
+        // Puter.js AI Integration - Following official documentation
+        async function sendAiMessage(messageText = null) {
+            const input = document.getElementById('aiMessageInput');
+            let message = messageText || input.value.trim();
+            
+            if (!message) return;
+
+            // Only clear input if this is a fresh message (not from pending)
+            if (!messageText) {
+                input.value = '';
+            }
+
+            // Check if user is logged in using official Puter.js API
+            const isLoggedIn = await isPuterLoggedIn();
+            
+            if (!isLoggedIn) {
+                // Put the message back if it wasn't already in input
+                if (!messageText && !input.value) {
+                    input.value = message;
+                }
+                // Show login modal
+                showPuterLoginModal(message);
+                return;
+            }
+
+            // Add user message to chat
+            addMessageToChat('user', message);
+
+            // Disable send button while processing
+            const sendBtn = document.getElementById('aiSendBtn');
+            sendBtn.disabled = true;
+
+            // Show loading animation
+            addLoadingMessage();
+
+            try {
+                // Use puter.ai.chat as per official documentation
+                // https://docs.puter.com - Chat with GPT-5 nano example
+                const response = await puter.ai.chat(message, { model: 'gpt-5-nano' });
+                
+                // Response is directly the text string
+                const aiText = response || 'No response from Puter AI';
+
+                removeLoadingMessage();
+                addMessageToChat('ai', aiText);
+            } catch (error) {
+                console.error('Puter AI Error:', error);
+                removeLoadingMessage();
+                
+                // Provide helpful error message
+                let errorMsg = 'Error communicating with Puter AI';
+                if (error.message) {
+                    errorMsg += ': ' + error.message;
+                }
+                if (error.status === 401) {
+                    errorMsg = 'Puter authentication failed. Please sign in again.';
+                }
+                
+                addMessageToChat('ai', errorMsg);
+            } finally {
+                sendBtn.disabled = false;
+                document.getElementById('aiMessageInput').focus();
+            }
+        }
+
+        function addLoadingMessage() {
+            const container = document.getElementById('aiMessagesContainer');
+            
+            const messageDiv = document.createElement('div');
+            messageDiv.id = 'ai-loading';
+            messageDiv.style.display = 'flex';
+            messageDiv.style.justifyContent = 'flex-start';
+            messageDiv.style.animation = 'fadeIn 0.3s ease-in';
+
+            const bubble = document.createElement('div');
+            bubble.style.maxWidth = '70%';
+            bubble.style.padding = '12px 16px';
+            bubble.style.borderRadius = '15px';
+            bubble.style.wordWrap = 'break-word';
+            bubble.style.fontSize = '0.95rem';
+            bubble.style.lineHeight = '1.5';
+            bubble.style.background = 'rgba(255, 255, 255, 0.05)';
+            bubble.style.color = 'var(--primary-text)';
+            bubble.style.border = '1px solid #333333';
+            bubble.style.textAlign = 'left';
+
+            bubble.innerHTML = '<span class="ai-loading-dot"></span><span class="ai-loading-dot"></span><span class="ai-loading-dot"></span>';
+            messageDiv.appendChild(bubble);
+            container.appendChild(messageDiv);
+
+            // Auto-scroll to bottom
+            setTimeout(() => {
+                container.scrollTop = container.scrollHeight;
+            }, 0);
+        }
+
+        function removeLoadingMessage() {
+            const loadingMsg = document.getElementById('ai-loading');
+            if (loadingMsg) {
+                loadingMsg.remove();
+            }
+        }
+
+        function addMessageToChat(sender, text) {
+            const container = document.getElementById('aiMessagesContainer');
+            
+            const messageDiv = document.createElement('div');
+            messageDiv.style.display = 'flex';
+            messageDiv.style.justifyContent = sender === 'user' ? 'flex-end' : 'flex-start';
+            messageDiv.style.animation = 'fadeIn 0.3s ease-in';
+
+            const bubble = document.createElement('div');
+            bubble.style.maxWidth = '70%';
+            bubble.style.padding = '12px 16px';
+            bubble.style.borderRadius = '15px';
+            bubble.style.wordWrap = 'break-word';
+            bubble.style.fontSize = '0.95rem';
+            bubble.style.lineHeight = '1.5';
+
+            if (sender === 'user') {
+                bubble.style.background = '#051B0B';
+                bubble.style.border = '2px solid #0d3b1f';
+                bubble.style.color = 'white';
+                bubble.style.textAlign = 'left';
+            } else {
+                bubble.style.background = 'rgba(255, 255, 255, 0.05)';
+                bubble.style.color = 'var(--primary-text)';
+                bubble.style.border = '1px solid #333333';
+                bubble.style.textAlign = 'left';
+            }
+
+            bubble.textContent = text;
+            messageDiv.appendChild(bubble);
+            container.appendChild(messageDiv);
+
+            // Auto-scroll to bottom
+            setTimeout(() => {
+                container.scrollTop = container.scrollHeight;
+            }, 0);
+        }
+
+        function clearChatHistory() {
+            const container = document.getElementById('aiMessagesContainer');
+            container.innerHTML = '';
+        }
+
+        // Add fade-in animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes fadeIn {
+                from {
+                    opacity: 0;
+                    transform: translateY(10px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+            
+            @keyframes dotGrow {
+                0%, 100% {
+                    opacity: 0.4;
+                    transform: scale(0.7);
+                }
+                50% {
+                    opacity: 1;
+                    transform: scale(1);
+                }
+            }
+            
+            .ai-loading-dot {
+                display: inline-block;
+                width: 6px;
+                height: 6px;
+                border-radius: 50%;
+                background: white;
+                margin: 0 2px;
+                animation: dotGrow 1.4s ease-in-out infinite;
+            }
+            
+            .ai-loading-dot:nth-child(1) {
+                animation-delay: 0s;
+            }
+            
+            .ai-loading-dot:nth-child(2) {
+                animation-delay: 0.2s;
+            }
+            
+            .ai-loading-dot:nth-child(3) {
+                animation-delay: 0.4s;
+            }
+        `;
+        document.head.appendChild(style);
+
+        // Handle Enter key in AI input
+        document.addEventListener('DOMContentLoaded', function() {
+            const aiInput = document.getElementById('aiMessageInput');
+            if (aiInput) {
+                aiInput.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter' && !e.shiftKey) {
+                        e.preventDefault();
+                        sendAiMessage();
+                    }
+                });
+            }
+
+            // Setup Puter login button
+            const puterSignInBtn = document.getElementById('puterSignInBtn');
+            if (puterSignInBtn) {
+                puterSignInBtn.addEventListener('click', handlePuterSignIn);
+            }
+        });
+    </script>
+</body>
+</html>
