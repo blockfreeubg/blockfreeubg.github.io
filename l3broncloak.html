@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CLOAKING</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+    :root {
+        --primary-bg: #000000;
+        --secondary-bg: #0d0d0d;
+        --tertiary-bg: #1a1a1a;
+        --primary-text: #ffffff;
+        --secondary-text: #aaaaaa;
+        --border-color: #262626;
+        --accent-color: #4CAF50;
+        --accent-light: #22c55e;
+        --navbar-bg: rgba(0, 0, 0, 0.95);
+        --card-bg: #0d0d0d;
+    }
+
+    body.theme-blue {
+        --primary-bg: #000d1a;
+        --secondary-bg: #00152d;
+        --tertiary-bg: #001d40;
+        --primary-text: #e0f0ff;
+        --secondary-text: #a0c0e0;
+        --border-color: #003366;
+        --accent-color: #4da6ff;
+        --accent-light: #80c7ff;
+        --navbar-bg: rgba(0, 5, 15, 0.80);
+        --card-bg: #00152d;
+    }
+
+    body.theme-purple {
+        --primary-bg: #150029;
+        --secondary-bg: #220040;
+        --tertiary-bg: #2d0052;
+        --primary-text: #f0e0ff;
+        --secondary-text: #d4a0ff;
+        --border-color: #4a0080;
+        --accent-color: #b366ff;
+        --accent-light: #cc99ff;
+        --navbar-bg: rgba(15, 0, 25, 0.80);
+        --card-bg: #220040;
+    }
+
+    body.theme-green {
+        --primary-bg: #000d06;
+        --secondary-bg: #001a0d;
+        --tertiary-bg: #002614;
+        --primary-text: #e0ffe0;
+        --secondary-text: #a0ffa0;
+        --border-color: #006600;
+        --accent-color: #4dff4d;
+        --accent-light: #99ff99;
+        --navbar-bg: rgba(0, 10, 5, 0.80);
+        --card-bg: #001a0d;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+        background-color: var(--primary-bg);
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+        color: var(--primary-text);
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+    }
+
+    .container {
+        text-align: center;
+        width: 90%;
+        max-width: 600px;
+        background: var(--card-bg);
+        padding: 2rem;
+        border-radius: 15px;
+        box-shadow: 0 0 20px rgba(0,0,0,0.5);
+    }
+
+    h3 { margin-bottom: 0.5rem; }
+
+    label { display: block; margin-top: 1rem; color: var(--primary-text); }
+
+    input[type="text"], select {
+        width: 100%;
+        padding: 0.6rem 1rem;
+        margin-top: 0.2rem;
+        border-radius: 10px;
+        border: 1px solid var(--border-color);
+        background: var(--secondary-bg);
+        color: var(--primary-text);
+        outline: none;
+    }
+
+    input[type="text"]::placeholder { color: var(--secondary-text); }
+
+    button {
+        margin-top: 1rem;
+        padding: 0.6rem 1.5rem;
+        border: none;
+        border-radius: 10px;
+        cursor: pointer;
+        font-size: 1rem;
+        background: var(--accent-color);
+        color: var(--primary-text);
+        transition: all 0.3s ease;
+    }
+
+    button:hover { background: var(--accent-light); }
+
+    #previewTitle { margin-top: 1rem; font-weight: bold; }
+    #previewFavicon { margin-top: 0.5rem; border-radius: 5px; }
+
+</style>
+</head>
+<body>
+
+<div class="container">
+<h2>Cloaking</h2>
+<p>MADE BY L3BR0N <br> INITIALS: H.F</p>
+
+<label>Select GitHub Cloak:</label>
+<select id="githubSelect">
+    <option value="https://raw.githubusercontent.com/L3br00n/Lebron/refs/heads/main/index.html">L3br0n Proxy</option>
+    <option value="https://raw.githubusercontent.com/craep0/gn-math.github.io/refs/heads/main/singlefile.html">GN Math</option>
+    <option value="https://raw.githubusercontent.com/nautilus-os/NautilusOS/refs/heads/main/NautilusOS-OneFile/index.html">NautilusOS</option>
+    <option value="https://raw.githubusercontent.com/dinguschan-owo/Helios/refs/heads/main/Offline-File/Helios-Offline.html">Helios Offline</option>
+    <option value="https://raw.githubusercontent.com/DaniezOnMC/html-unblocker/refs/heads/main/index.html">HTML Unblocker</option>
+    <option value="https://raw.githubusercontent.com/321EZ123/Oasis/refs/heads/main/index.html">Oasis Proxy</option>
+    <option value="https://raw.githubusercontent.com/lorddenish/ddragon-hub/refs/heads/main/index.html">Dragon Game Hub</option>
+    <option value="https://raw.githubusercontent.com/L3br00n/Unblocked-Google/refs/heads/main/google.html">Secret Google</option>
+</select>
+
+<label>Tab Name:</label>
+<input type="text" id="cloakTitle" placeholder="Google Docs">
+
+<label>Favicon URL or Domain:</label>
+<input type="text" id="cloakFavicon" placeholder="docs.google.com">
+
+<button onclick="startCloak()">Start Cloak</button>
+
+<h4>Preview:</h4>
+<p id="previewTitle">Preview Title</p>
+<img id="previewFavicon" width="32" height="32" alt="Favicon Preview">
+</div>
+
+<script>
+document.getElementById("cloakTitle").addEventListener("input", updatePreview);
+document.getElementById("cloakFavicon").addEventListener("input", updatePreview);
+
+function startCloak() {
+    const titleInput = document.getElementById("cloakTitle").value.trim() || "Google";
+    const faviconInput = document.getElementById("cloakFavicon").value.trim() || "docs.google.com";
+    const githubURL = document.getElementById("githubSelect").value;
+
+    const w = window.open("about:blank", "_blank");
+
+    fetch(githubURL + "?t=" + Date.now())
+        .then(r => r.text())
+        .then(html => {
+            w.document.open();
+            w.document.write(html);
+            w.document.close();
+
+            let count = 0;
+            const interval = setInterval(() => {
+                if (!w || w.closed) { clearInterval(interval); return; }
+                setCloakSettings(w, titleInput, faviconInput);
+                count++;
+                if (count >= 20) clearInterval(interval);
+            }, 50);
+
+            setTimeout(() => window.close(), 500);
+        })
+        .catch(err => console.error("Failed to fetch HTML:", err));
+
+    updatePreview();
+}
+
+function setCloakSettings(win, title, favicon) {
+    if (!win || win.closed) return;
+    try {
+        win.document.title = title;
+
+        win.document.querySelectorAll("link[rel='icon'], link[rel='shortcut icon']").forEach(el => el.remove());
+
+        let domain = favicon;
+        try {
+            const urlObj = new URL(favicon.startsWith("http") ? favicon : "https://" + favicon);
+            domain = urlObj.origin;
+        } catch(e) { domain = "https://" + favicon.replace(/^https?:\/\//, ""); }
+
+        const icon = win.document.createElement("link");
+        icon.rel = "icon";
+        icon.href = `https://www.google.com/s2/favicons?domain=${domain}&sz=64`;
+        win.document.head.appendChild(icon);
+
+        const shortcut = win.document.createElement("link");
+        shortcut.rel = "shortcut icon";
+        shortcut.href = icon.href;
+        win.document.head.appendChild(shortcut);
+    } catch(e) { console.log("Error updating cloaked window:", e); }
+}
+
+function updatePreview() {
+    const title = document.getElementById("cloakTitle").value.trim() || "Google";
+    const favicon = document.getElementById("cloakFavicon").value.trim() || "docs.google.com";
+    document.getElementById("previewTitle").textContent = title;
+
+    let domain = favicon;
+    try {
+        const urlObj = new URL(favicon.startsWith("http") ? favicon : "https://" + favicon);
+        domain = urlObj.origin;
+    } catch(e) { domain = "https://" + favicon.replace(/^https?:\/\//, ""); }
+
+    document.getElementById("previewFavicon").src = `https://www.google.com/s2/favicons?domain=${domain}&sz=64`;
+}
+</script>
+
+</body>
+</html>
