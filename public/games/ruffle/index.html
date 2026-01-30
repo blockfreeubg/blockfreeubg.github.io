@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ruffle Emulator</title>
+   <style>
+    body, html { 
+        margin: 0; padding: 0; width: 100%; height: 100%; 
+        
+        background-image: url('/public/media/background.gif'); 
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+        
+        color: #e0e0e0; 
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        overflow: hidden; display: flex; align-items: center; justify-content: center;
+    }
+
+    #upload-container {
+        text-align: center; 
+        transition: opacity 0.5s ease, transform 0.5s ease;
+        padding: 40px; 
+        border: 1px solid rgba(255,255,255,0.1); 
+        border-radius: 20px; 
+        
+        background: rgba(30, 30, 30, 0.7); 
+        backdrop-filter: blur(10px); 
+        box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+    }
+    
+    
+    #player-container {
+        position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+        background: #000; 
+        display: none; z-index: 999;
+    }
+        
+        #upload-container {
+            text-align: center; transition: opacity 0.5s ease, transform 0.5s ease;
+            padding: 40px; border: 2px dashed #333; border-radius: 20px; background: #1e1e1e;
+        }
+
+        #upload-container.hidden { opacity: 0; transform: scale(0.9); pointer-events: none; }
+
+        h1 { margin-bottom: 10px; color: #fff; }
+        p { color: #888; margin-bottom: 30px; }
+
+        
+        .custom-upload {
+            background: #007bff; color: white; padding: 12px 30px;
+            border-radius: 50px; cursor: pointer; display: inline-block;
+            font-weight: bold; transition: background 0.3s;
+        }
+        .custom-upload:hover { background: #0056b3; }
+        input[type="file"] { display: none; }
+
+        
+        #player-container {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: black; display: none; z-index: 99;
+        }
+        ruffle-player { width: 100%; height: 100%; }
+    </style>
+</head>
+<body>
+
+    
+    <div id="upload-container">
+        <h1>Blockfree Ruffle Player</h1>
+        <p>Select a .swf file to play in fullscreen</p>
+        <label class="custom-upload">
+            Choose File
+            <input type="file" id="file-selector" accept=".swf">
+        </label>
+    </div>
+
+    
+    <div id="player-container"></div>
+
+    
+    <script src="ruffle.js"></script>
+
+    <script>
+        const fileSelector = document.getElementById('file-selector');
+        const uploadUI = document.getElementById('upload-container');
+        const playerContainer = document.getElementById('player-container');
+
+        fileSelector.addEventListener('change', (event) => {
+            const file = event.target.files[0];
+            if (file) {
+                
+                uploadUI.classList.add('hidden');
+
+                
+                const ruffle = window.RufflePlayer.newest();
+                const player = ruffle.createPlayer();
+                
+                
+                playerContainer.style.display = 'block';
+                playerContainer.appendChild(player);
+
+                
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    player.load({ data: e.target.result });
+                };
+                reader.readAsArrayBuffer(file);
+            }
+        });
+    </script>
+</body>
+</html>

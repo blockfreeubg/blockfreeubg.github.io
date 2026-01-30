@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>BlockFree</title>
+  <favicon href="public/media/favicon.ico" type="image/x-icon" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <style>
@@ -14,7 +15,7 @@
     }
 
     body {
-      background: url("background.gif") no-repeat center center fixed;
+      background: url("public/media/background.gif") no-repeat center center fixed;
       background-size: cover;
       color: white;
       min-height: 100vh;
@@ -65,23 +66,58 @@
     }
 
     footer {
-      position: fixed;
-      bottom: 10px;
-      opacity: 0.6;
-      font-size: 0.85rem;
-    }
+  position: fixed;
+  bottom: 10px;
+  left: 0;         /* Align to the very left edge */
+  width: 100%;     /* Stretch across the whole screen */
+  text-align: center; 
+  opacity: 0.6;
+  font-size: 0.85rem;
+}
+
   </style>
 </head>
 <body>
 
-  <img src="logo.png" alt="UBG Logo">
+  <img src="public/media/logo.png" alt="UBG Logo">
 
   <h1>BlockFree</h1>
-  <p>obama is our savior</p>
+  <div id="quote-container">
+    <p id="quote-text"></p> 
+    <script>
+      const quotes = [
+        "Gaming without limits.",
+        "Play freely, live fully.",
+        "Unleash your gaming potential.",
+        "Where games meet freedom.",
+        "Hi",
+        "Gaming for everyone, everywhere.",
+        "obama is our savior",
+        "ewwww comic sans"
+      ];
+
+      const quoteElement = document.getElementById('quote-container').querySelector('p');
+      const randomIndex = Math.floor(Math.random() * quotes.length);
+      quoteElement.textContent = quotes[randomIndex];
+    </script>
+  </div>
 
   <div class="buttons">
-    <a href="games">Games</a>
-    <a href="ruffle">Ruffle Emulator</a>
+    <a href="public/games.html">Games</a>
+    <a href="public/games/ruffle/">Ruffle Emulator</a>
   </div>
+
+<head>
+  <style>
+    footer {
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <footer>
+    &copy; 2026 BlockFree. All rights reserved.
+  </footer>
+</body>
 </body>
 </html>
