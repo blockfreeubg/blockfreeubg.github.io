@@ -1,6 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <link rel="icon" type="image/png" href="/public/media/favicon-96x96.png" sizes="96x96" />
+<link rel="icon" type="image/svg+xml" href="/public/media/favicon.svg" />
+<link rel="shortcut icon" href="/public/media/favicon.png/favicon.ico" />
+<link rel="apple-touch-icon" sizes="180x180" href="/public/media/apple-touch-icon.png" />
+<meta name="apple-mobile-web-app-title" content="BlockFree" />
+<link rel="manifest" href="/public/media/site.webmanifest" />
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ruffle Emulator</title>
@@ -29,6 +35,18 @@
         backdrop-filter: blur(10px); 
         box-shadow: 0 8px 32px rgba(0,0,0,0.5);
     }
+
+    footer {
+  position: fixed;
+  color: white;
+  bottom: 10px;
+  left: 0;         /* Align to the very left edge */
+  width: 100%;     /* Stretch across the whole screen */
+  text-align: center; 
+  background: rgba(0,0,0,0.6); /* semi-transparent background to blend with page */
+  opacity: 0.6;
+  font-size: 0.85rem;
+}
     
     
     #player-container {
@@ -110,5 +128,14 @@
             }
         });
     </script>
+</body>
+<body>
+
+  <div id="gamesContainer"></div>
+
+  <footer>
+    &copy; 2024 BlockFree. All rights reserved.
+  </footer>
+
 </body>
 </html>
