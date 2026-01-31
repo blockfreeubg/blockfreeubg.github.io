@@ -5,14 +5,19 @@
   <meta charset="UTF-8">
   <title>BlockFree | Games</title>
   <style>
+    html, body {
+      height: 100%;
+      margin: 0;
+    }
+
     body {
       display: flex;
-      flex-wrap: wrap; 
-      gap: 10px;      
+      flex-wrap: wrap;
+      gap: 10px;
       padding: 20px;
       background: url('media/background.gif') no-repeat center center;
-      background-size: cover; 
-      font-family: 'Comic Sans MS', cursive, sans-serif; 
+      background-size: cover;
+      font-family: 'Comic Sans MS', cursive, sans-serif;
     }
 
     a {
@@ -28,6 +33,20 @@
 
     a:hover {
       background-color: #333; /* dark gray hover effect */
+    }
+
+    footer {
+      position: fixed;
+      bottom: 0;
+      left: 0;         /* Align to the very left edge */
+      width: 100%;     /* Stretch across the whole screen */
+      text-align: center;
+      background: rgba(0,0,0,0.6); /* semi-transparent background to blend with page */
+      color: #fff;
+      font-size: 0.85rem;
+      padding: 8px 0;
+      box-sizing: border-box;
+      z-index: 1000;
     }
   </style>
 </head>
@@ -49,8 +68,9 @@
   <a href="games/htmls/petezahlite.html">Petezah Lite</a>
   <a href="games/htmls/ugsgames.html">UGS Games</a>
   <a href="games/htmls/Elite-Gamez.html">Elite Gamez</a>
-</body>
-</html>
-<footer>
+
+  <footer>
     &copy; 2024 BlockFree. All rights reserved.
   </footer>
+</body>
+</html>
